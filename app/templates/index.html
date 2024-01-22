@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG cloud</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/custom.css') }}" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row mb-3">
+
+            <div class="col-1.5">
+                {% set last_slash_index = path.rfind("/") %}
+                {% set back_path = path[:last_slash_index] if last_slash_index != 0 else '/' %}
+                <button class="btn btn-primary" onclick="redirectToDetails('{{ back_path }}')">Назад</button>
+            </div>
+
+            <div class="col">
+                <button class="btn btn-primary" onclick="redirectToSearch()">Поиск</button>
+            </div>
+
+            <div class="col text-right">
+                <button class="btn btn-primary" onclick="create_folder('{{ path }}')">Создать папку</button>
+            </div>
+
+            <div class="col-1.5 text-right">
+                <form id="uploadForm" action="/uploadfile/" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" id="fileInput" style="display: none;">
+                    <input type="text" name="path" value='{{ path }}' style="display: none;" id="pathInput">
+                    <button class="btn btn-primary" type="button" onclick="chooseFile()">Загрузить файлы</button>
+                </form>
+            </div>
+
+        <progress id="progressBar" class="progress-bar-transition" value="100" max="100" style="width: 100%;"></progress>
+
+        </div>
+
+        <div class="row">
+            <h5 style="width: 100%; text-align: center;">{{ path }}</h5>
+        </div>
+
+        <div class="row">
+            <div class="col">
+
+                <ul class="list-group">
+                    {% for folder in folders %}
+                        <li class="list-group-item">
+                            <a href="javascript:void(0);" onclick="redirectToDetails('{{ folder.path_to }}')" oncontextmenu="showContextMenu(event)">
+                                <img src="{{ url_for('static', path='folder.svg') }}" alt="SVG Image" width="38" style="padding-bottom: 3px;" data="type=folder&id={{folder.id}}">
+                                <span data="type=folder&id={{folder.id}}">{{ folder.name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+
+                    {% for file in files %}
+                        <li class="list-group-item">
+                            <a href="javascript:void(0);" oncontextmenu="showContextMenu(event)">
+                                <img src="{{ url_for('static', path='file.svg') }}" alt="SVG Image" width="38" style="padding-bottom: 3px;" data="type=file&id={{file.id}}">
+                                <span data="type=file&id={{file.id}}">{{ file.name }}</span>
+                            </a>
+                            <span class="float-right" style="padding-left: 5px; padding-top: 5px;">{{ "%.2f"|format(file.size) }} MB</span>
+                            <span class="float-right" style="padding-right: 5px;  padding-top: 5px;">{{ file.extension }}</span> 
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="context-menu" id="userContextMenu">
+        <div class="context-menu-item" onclick="handleContextAction(1)">Переименовать</div>
+        <div class="context-menu-item" onclick="handleContextAction(2)">Переместить</div>
+        <div class="context-menu-item" onclick="handleContextAction(3)">Удалить</div>
+        <div class="context-menu-item" onclick="handleContextAction(4)">Скачать</div>
+    </div>
+
+    <script src="{{ url_for('static', path='js/general.js') }}"></script>
+    <script src="{{ url_for('static', path='js/context_menu.js') }}"></script>
+    <script src="{{ url_for('static', path='js/redirects.js') }}"></script>
+    <script src="{{ url_for('static', path='js/save_file.js') }}"></script>
+
+</body>
+</html>

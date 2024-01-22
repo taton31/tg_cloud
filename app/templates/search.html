@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/custom.css') }}" rel="stylesheet">
+    <title>FastAPI Search Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        div {
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: space-between;">
+
+        <!-- Левый блок -->
+        <div>
+            <form action="/search/file" method="post">
+                <label for="folder">в папке:</label>
+                <input type="text" id="folder" name="folder">
+
+                <label for="filename">Название файла:</label>
+                <input type="text" id="filename" name="filename">
+
+                <label for="extension">расширение:</label>
+                <input type="text" id="extension" name="extension">
+
+                <label for="uploaded_after">загружен после:</label>
+                <input type="date" id="uploaded_after" name="uploaded_after">
+
+                <label for="uploaded_before">загружен до:</label>
+                <input type="date" id="uploaded_before" name="uploaded_before">
+
+                <label for="size_from">размер от:</label>
+                <input type="number" id="size_from" name="size_from">
+
+                <label for="size_to">размер до:</label>
+                <input type="number" id="size_to" name="size_to">
+
+                <button type="submit">Поиск</button>
+            </form>
+        </div>
+
+        <!-- Правый блок -->
+        <div>
+            <form action="/search/folder" method="post">
+                <label for="folder_in_folder">в папке:</label>
+                <input type="text" id="folder_in_folder" name="folder_in_folder">
+
+                <label for="subfolder_name">Название папки:</label>
+                <input type="text" id="subfolder_name" name="subfolder_name">
+
+                <button type="submit">Поиск</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Нижний блок -->
+    <div>
+        <h2>Список файлов:</h2>
+        <ul class="list-group">
+            {% for folder in folders %}
+                <li class="list-group-item">
+                    <a href="javascript:void(0);" onclick="redirectToDetails('{{ folder.path_to }}')" oncontextmenu="showContextMenu(event)">
+                        <img src="{{ url_for('static', path='folder.svg') }}" alt="SVG Image" width="38" style="padding-bottom: 3px;" data="type=folder&id={{folder.id}}">
+                        <span data="type=folder&id={{folder.id}}">{{ folder.name }}</span>
+                    </a>
+                    <!-- <span class="float-right">{{ folder.id }}</span> -->
+                </li>
+            {% endfor %}
+
+            {% for file in files %}
+                <li class="list-group-item">
+                    <a href="javascript:void(0);" oncontextmenu="showContextMenu(event)">
+                        <img src="{{ url_for('static', path='file.svg') }}" alt="SVG Image" width="38" style="padding-bottom: 3px;" data="type=file&id={{file.id}}">
+                        <span data="type=file&id={{file.id}}">{{ file.name }}</span>
+                    </a>
+                    <span class="float-right" style="padding-left: 5px; padding-top: 5px;">{{ "%.2f"|format(file.size) }} MB</span>
+                    <span class="float-right" style="padding-right: 5px;  padding-top: 5px;">{{ file.extension }}</span> 
+                    <!-- border-right: 1px solid grey;  -->
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+</html>
