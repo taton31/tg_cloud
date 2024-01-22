@@ -1,19 +1,11 @@
-from fastapi import FastAPI, Request, UploadFile, Form
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
-from sse_starlette.sse import EventSourceResponse
-
-from typing import Optional
-
-import asyncio
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine 
 
 from urllib.parse import quote
-from io import BytesIO
 
 from app.models import Base
 
@@ -22,8 +14,6 @@ load_dotenv('.env')
 
 from app.Progress import Progress
 progress = Progress()
-
-from bot import send_file, download_file 
 
 from config import DATABASE_URL
 

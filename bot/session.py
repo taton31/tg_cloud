@@ -2,6 +2,7 @@ from telethon import TelegramClient
 from telethon.sync import TelegramClient
 
 import os
+print(os.getenv('API_HASH'))
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 phone_number = os.getenv('PHONE_NUMBER')
@@ -26,3 +27,8 @@ async def get_session():
 
     return client
 
+if __name__ == '__main__':
+    import asyncio
+    from dotenv import load_dotenv
+    load_dotenv('./.env')
+    asyncio.run(get_session())
