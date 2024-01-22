@@ -2,7 +2,6 @@ from telethon import TelegramClient
 from telethon.sync import TelegramClient
 
 import os
-print(os.getenv('API_HASH'))
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 phone_number = os.getenv('PHONE_NUMBER')
