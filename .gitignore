@@ -5,3 +5,4 @@ __pycache__
 bot/sessions
 DB
 *.db
+tst/

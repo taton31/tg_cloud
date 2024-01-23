@@ -1,2 +1,2 @@
-CHANK_SIZE_MB = 100
+CHANK_SIZE_MB = 500
 DATABASE_URL = "sqlite:///DB/main.db"

@@ -23,7 +23,7 @@ async def send_file(file, task_id):
             part_file = file.read(CHANK_SIZE_MB * 1024 * 1024)
             if not part_file:
                 break
-
+            print(f'send_file: {chat_id = }, {ids = }')
             file_info = await client.send_file(
                                             chat_id,
                                             part_file,
@@ -64,6 +64,8 @@ async def download_file(message_id, task_id):
             total_size += message.media.document.size
 
         for msg in list_msg:    
+            print(f'download_file: {chat_id = }, {msg.id = }')
+
             blob += await client.download_media(msg, file=bytes, progress_callback=callback)
 
         await client.disconnect()
