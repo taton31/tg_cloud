@@ -14,11 +14,6 @@
         div {
             margin-bottom: 20px;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            max-width: 300px;
-        }
         label {
             margin-top: 10px;
         }
@@ -28,10 +23,6 @@
         button {
             margin-top: 10px;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
         li {
             margin-bottom: 5px;
         }
@@ -39,52 +30,59 @@
 </head>
 <body>
 
-    <div style="display: flex; justify-content: space-between;">
+    <div class="row">
 
-        <!-- Левый блок -->
-        <div>
-            <form action="/search/file" method="post">
-                <label for="folder">в папке:</label>
-                <input type="text" id="folder" name="folder">
+        <div class="col-6">
+            <div class="search-block">
+                <form action="/search/file" method="post">
+                    <div class="row">
+                        <label for="folder">в папке:</label>
+                        <input type="text" id="folder" name="folder">
+                    </div>
+                    <div class="row">
+                        <label for="filename">Название файла:</label>
+                        <input type="text" id="filename" name="filename">
 
-                <label for="filename">Название файла:</label>
-                <input type="text" id="filename" name="filename">
+                        <label for="extension">расширение:</label>
+                        <input type="text" id="extension" name="extension">
+                    </div>
 
-                <label for="extension">расширение:</label>
-                <input type="text" id="extension" name="extension">
+                    <div class="row">
+                        <label for="uploaded_after">загружен после:</label>
+                        <input type="date" id="uploaded_after" name="uploaded_after">
 
-                <label for="uploaded_after">загружен после:</label>
-                <input type="date" id="uploaded_after" name="uploaded_after">
+                        <label for="uploaded_before">загружен до:</label>
+                        <input type="date" id="uploaded_before" name="uploaded_before">
+                    </div>
 
-                <label for="uploaded_before">загружен до:</label>
-                <input type="date" id="uploaded_before" name="uploaded_before">
+                    <div class="row">
+                        <label for="size_from">размер от:</label>
+                        <input type="number" id="size_from" name="size_from">
 
-                <label for="size_from">размер от:</label>
-                <input type="number" id="size_from" name="size_from">
+                        <label for="size_to">размер до:</label>
+                        <input type="number" id="size_to" name="size_to">
+                    </div>
 
-                <label for="size_to">размер до:</label>
-                <input type="number" id="size_to" name="size_to">
-
-                <button type="submit">Поиск</button>
-            </form>
+                    <button type="submit">Поиск</button>
+                </form>
+            </div>
         </div>
 
-        <!-- Правый блок -->
-        <div>
-            <form action="/search/folder" method="post">
-                <label for="folder_in_folder">в папке:</label>
-                <input type="text" id="folder_in_folder" name="folder_in_folder">
+        <div class="col-6">
+            <div>
+                <form action="/search/folder" method="post">
+                    <label for="folder_in_folder">в папке:</label>
+                    <input type="text" id="folder_in_folder" name="folder_in_folder">
 
-                <label for="subfolder_name">Название папки:</label>
-                <input type="text" id="subfolder_name" name="subfolder_name">
+                    <label for="subfolder_name">Название папки:</label>
+                    <input type="text" id="subfolder_name" name="subfolder_name">
 
-                <button type="submit">Поиск</button>
-            </form>
+                    <button type="submit">Поиск</button>
+                </form>
+            </div>
         </div>
-
     </div>
 
-    <!-- Нижний блок -->
     <div>
         <h2>Список файлов:</h2>
         <ul class="list-group">
@@ -94,7 +92,6 @@
                         <img src="{{ url_for('static', path='folder.svg') }}" alt="SVG Image" width="38" style="padding-bottom: 3px;" data="type=folder&id={{folder.id}}">
                         <span data="type=folder&id={{folder.id}}">{{ folder.name }}</span>
                     </a>
-                    <!-- <span class="float-right">{{ folder.id }}</span> -->
                 </li>
             {% endfor %}
 
@@ -106,11 +103,21 @@
                     </a>
                     <span class="float-right" style="padding-left: 5px; padding-top: 5px;">{{ "%.2f"|format(file.size) }} MB</span>
                     <span class="float-right" style="padding-right: 5px;  padding-top: 5px;">{{ file.extension }}</span> 
-                    <!-- border-right: 1px solid grey;  -->
                 </li>
             {% endfor %}
         </ul>
     </div>
 
+    <div class="context-menu" id="userContextMenu">
+        <div class="context-menu-item" onclick="handleContextAction(1)">Переименовать</div>
+        <div class="context-menu-item" onclick="handleContextAction(2)">Переместить</div>
+        <div class="context-menu-item" onclick="handleContextAction(3)">Удалить</div>
+        <div class="context-menu-item" onclick="handleContextAction(4)">Скачать</div>
+    </div>
+    
+    <script src="{{ url_for('static', path='js/general.js') }}"></script>
+    <script src="{{ url_for('static', path='js/context_menu.js') }}"></script>
+    <script src="{{ url_for('static', path='js/redirects.js') }}"></script>
+    <!-- <script src="{{ url_for('static', path='js/save_file.js') }}"></script> -->
 </body>
 </html>

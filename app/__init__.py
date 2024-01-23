@@ -29,7 +29,7 @@ Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
 
-from app.models.crud_search import search_files_form
+from app.models.crud_search import search_files_form, search_folders_form
 from app.models.crud_file import get_files, create_file_with_id, rename_file, move_file, remove_file, get_file_id
 from app.models.crud_folder import get_folders, rename_folder, move_folder, remove_folder, create_folder_but
 

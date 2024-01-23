@@ -1,10 +1,7 @@
-from fastapi import FastAPI, Request, UploadFile, Form
-from fastapi.responses import HTMLResponse, StreamingResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
+from fastapi import Request, Form
+from fastapi.responses import HTMLResponse
 
-from sse_starlette.sse import EventSourceResponse
-from app import app, templates, search_files_form
+from app import app, templates, search_files_form, search_folders_form
 
 from typing import Optional
 
@@ -26,9 +23,18 @@ async def search_files(
     uploaded_before: Optional[str] = Form(None),
     size_from: Optional[int] = Form(None),
     size_to: Optional[int] = Form(None)
-    # folder_in_folder: Optional[str] = Form(None),
-    # subfolder_name: Optional[str] = Form(None)
 ):
     
     return templates.TemplateResponse("search.html", {"request": request, "folders": [], "files": search_files_form(folder, filename, extension, uploaded_after, uploaded_before, size_from, size_to)})
+
+
+
+@app.post("/search/folder", response_class=HTMLResponse)
+async def search_files(
+    request: Request,
+    folder_in_folder: Optional[str] = Form(None),
+    subfolder_name: Optional[str] = Form(None)
+):
+    
+    return templates.TemplateResponse("search.html", {"request": request, "folders": search_folders_form(folder_in_folder, subfolder_name), "files": []})
 
