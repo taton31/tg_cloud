@@ -45,6 +45,8 @@ async def download_file(message_id, task_id):
 
         for msg in list_msg:    
             yield await client.download_media(msg, file=bytes, progress_callback=callback)
+            print(f'DOWNLOAD file: {msg.id}')
+
 
         await client.disconnect()
         
