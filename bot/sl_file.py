@@ -4,21 +4,29 @@ from bot.session import get_session
 
 from app import progress
 
+from config import CHANK
+
 import os
 chat_id = os.getenv('CHAT_ID')
 
 
-async def send_file_cor(chunk, task_id, i, total_size):
+async def send_file_cor(file, task_id, total_size):
     def callback(current, total):
         progress.set_progress(task_id, i, round(current / total_size * 100, 2))
 
+    ids = []
+    i = 1
     try:
         client: TelegramClient = await get_session()
-        file_info = await client.send_file(chat_id, file=chunk, force_document=True, progress_callback=callback,)
+
+        while chunk := await file.read(CHANK):
+            ids.append((await client.send_file(chat_id, file=chunk, force_document=True, progress_callback=callback,)).id)
+            print(f'SEND file: {round(i*CHANK/total_size*100,2)}')
+            i += 1
 
         await client.disconnect()
 
-        return file_info.id
+        return str(ids)
     
     except Exception as e:
         print(e)

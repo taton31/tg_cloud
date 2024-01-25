@@ -15,20 +15,14 @@ progress = Progress()
 
 from bot import download_file, send_file_cor
 
-from config import CHANK
 
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile, path: str, task_id: int, size: int):
-    i = 0
-    ids = []
 
-    while chunk := await file.read(CHANK):
-        ids.append( await send_file_cor(chunk, task_id, i, size))
-        i += 1
-        print(f'SEND file: {round(i*CHANK/size*100,2)}')
+    ids = await send_file_cor(file, task_id, size)
 
-    create_file_with_id(file.filename, round(size/1024/1024, 3), path, file.filename.split('.')[-1], str(ids))
+    create_file_with_id(file.filename, round(size/1024/1024, 3), path, file.filename.split('.')[-1], ids)
 
     return {"status": 200}
 
