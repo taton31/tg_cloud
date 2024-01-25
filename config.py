@@ -1,5 +1,2 @@
-CHANK = 50 * 1024 * 1024
-CHANK_SEND = 100 * 1024 * 1024
+CHANK = 100 * 1024 * 1024
 DATABASE_URL = "sqlite:///DB/main.db"
-
-TMP_FILE_FOLDER = 'tmp'

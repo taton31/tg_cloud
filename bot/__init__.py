@@ -1,2 +1,1 @@
-from bot.sl_file import send_file, download_file
-
+from bot.sl_file import download_file, send_file_cor

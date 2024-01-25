@@ -55,53 +55,25 @@ function handleContextAction(action) {
 
         fetch('/downloadfile?' + data + '&task_id=' + task_id)
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const contentDisposition = response.headers.get('content-disposition');
+            const contentDisposition = response.headers.get('Content-Disposition');
             const filenameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"/);
-            const filename = filenameMatch ? filenameMatch[1] : 'downloaded-file.txt';
+            const filename = filenameMatch ? filenameMatch[1] : 'example.txt';
             const filename_decode = decodeURIComponent(filename)
-
-            const contentLength = parseInt(response.headers.get('content-length'), 10);
-            let loadedBytes = 0;
-
+            return Promise.all([response.blob(), Promise.resolve(filename_decode)]);
+        })
+        .then(([blob, filename]) => {
             const downloadLink = document.createElement('a');
+            downloadLink.href = window.URL.createObjectURL(blob);
+            downloadLink.download = filename;
 
-            downloadLink.download = filename_decode;
             document.body.appendChild(downloadLink);
+            downloadLink.click();
 
-            const reader = response.body.getReader();
-            
-            
-
-            parts = []
-            function read() {
-                return reader.read().then(({ value, done }) => {
-                    if (done) {
-                        blob = new Blob(parts);
-                        downloadLink.href = window.URL.createObjectURL(blob);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                        return;
-                    }
-
-                    loadedBytes += value.byteLength;
-                    const progress = (loadedBytes / contentLength) * 100;
-                    progressBar.value = progress;
-                    
-                    parts.push(value)
-                    read();
-                });
-            }
-
-            read();
-            
+            document.body.removeChild(downloadLink);
         })
-        .then(() => {
-            window.location.reload();
-        })
-        .catch(error => console.error('Error during download:', error));
+        .catch(error => {
+            console.error('Error during file download:', error);
+        });
 
 
         create_event_listener(task_id);
