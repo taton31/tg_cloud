@@ -22,19 +22,31 @@ function handleContextAction(action) {
     if (action === 1) {
         new_name = prompt("Новое название:", "")
         if (new_name) {
-            fetch('/rename?' + data + '&new_name=' + new_name).then(window.location.reload())
+            fetch('/rename?' + data + '&new_name=' + new_name)
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => console.error('Ошибка:', error));
         }
 
     } else if (action === 2) {
         new_path = prompt("Новый путь:", "")
         if (new_path) {
-            fetch('/move?' + data + '&new_path=' + new_path).then(window.location.reload())
+            fetch('/move?' + data + '&new_path=' + new_path)
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => console.error('Ошибка:', error));
         }
 
     } else if (action === 3) {
         userConfirmed = confirm("Точно хочешь удалить?");
         if (userConfirmed) {
-            fetch('/remove?' + data).then(window.location.reload())
+            fetch('/remove?' + data)
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => console.error('Ошибка:', error));
         }
 
     } else if (action === 4) {
@@ -85,6 +97,9 @@ function handleContextAction(action) {
 
             read();
             
+        })
+        .then(() => {
+            window.location.reload();
         })
         .catch(error => console.error('Error during download:', error));
 

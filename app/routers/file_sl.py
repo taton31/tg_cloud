@@ -1,68 +1,59 @@
 from app import app, create_file_with_id, get_file_id
 
-from fastapi import Request, UploadFile
+from fastapi import Request, UploadFile, BackgroundTasks
 from fastapi.responses import StreamingResponse
 
 from sse_starlette.sse import EventSourceResponse
 
 import asyncio
-
+import os
 
 from urllib.parse import quote
-from io import BytesIO
+
 
 from app.Progress import Progress
 progress = Progress()
 
 from bot import send_file, download_file 
 
+from config import TMP_FILE_FOLDER, CHANK
+
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile, path: str, task_id: int):
-    # print({"filename": file.filename, "text": path})
-    # set_progress(task_id, 0)
-    file_data = await file.read()
-    # Отправка файла через телеграм-бота
-    bio = BytesIO(file_data)
-    bio.name = file.filename
-    tg_id = await send_file(bio, task_id)
+async def create_upload_file(file: UploadFile, path: str, task_id: int, background_tasks: BackgroundTasks):
+    file_path = f'{TMP_FILE_FOLDER}/{task_id}'
+
+    with open(file_path, "wb") as f:
+        while chunk := await file.read(CHANK):
+            f.write(chunk)
+
+    tg_id = await send_file(task_id)
     create_file_with_id(file.filename, round(file.size/1024/1024, 3), path, file.filename.split('.')[-1], tg_id)
-    return {"filename": file.filename, "text": path}
 
+    background_tasks.add_task(os.remove, file_path)
 
-# @app.post("/uploadfile/")
-# async def create_upload_file(file: UploadFile, path: str, task_id: int):
-#     # print({"filename": file.filename, "text": path})
-#     set_progress(task_id, 0)
-#     file_data = await file.read()
-#     # Отправка файла через телеграм-бота
-#     bio = BytesIO(file_data)
-#     bio.name = file.filename
-#     tg_id = await send_file(bio, task_id)
-#     create_file_with_id(db, file.filename, round(file.size/1024/1024, 3), path, file.filename.split('.')[-1], tg_id)
-#     return {"filename": file.filename, "text": path}
+    return {"status": 200}
+
 
 
 @app.get("/downloadfile")
-async def create_upload_file(type: str, id: str, task_id: int):
-    # set_progress(task_id, 0)
+async def create_upload_file(type: str, id: str, task_id: int, background_tasks: BackgroundTasks):
     tg_id, name = get_file_id(id)
-    blob = await download_file(tg_id, task_id)
-    blob = BytesIO(blob)
+    total_size = await download_file(tg_id, task_id)
+
+    file_path = f'{TMP_FILE_FOLDER}/{task_id}'
+    
+    def generate_file_chunks(file_path, chunk_size=CHANK):
+            with open(f'{file_path}', 'rb') as f:
+                while chunk := f.read(chunk_size):
+                    yield chunk
+
     name = quote(name, safe='')
-    return StreamingResponse(blob, media_type="application/octet-stream", headers={"Content-Disposition": f"attachment;filename=\"{name}\"", "content-length": f"{blob.getbuffer().nbytes}"})
+
+    background_tasks.add_task(os.remove, file_path)
+
+    return StreamingResponse(generate_file_chunks(file_path), media_type="application/octet-stream", headers={"Content-Disposition": f"attachment;filename=\"{name}\"", "content-length": f"{total_size}"})
    
-
-
-# @app.get("/downloadfile")
-# async def create_upload_file(type: str, id: str, task_id: int):
-#     set_progress(task_id, 0)
-#     tg_id, name = get_file_id(db, id)
-#     blob = await download_file(tg_id, task_id)
-#     name = quote(name, safe='')
-#     return StreamingResponse(BytesIO(blob), media_type="application/octet-stream", headers={"Content-Disposition": f"attachment;filename=\"{name}\""})
-   
-
 
 
 @app.get("/load_progress")

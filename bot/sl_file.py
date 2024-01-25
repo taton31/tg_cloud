@@ -7,9 +7,9 @@ from app import progress
 import os
 chat_id = os.getenv('CHAT_ID')
 
-from config import CHANK_SIZE_MB
+from config import TMP_FILE_FOLDER, CHANK_SEND
 
-async def send_file(file, task_id):
+async def send_file(task_id):
     def callback(current, total):
         progress.set_progress(task_id, i, round(current / total_size * 100, 2))
 
@@ -17,22 +17,17 @@ async def send_file(file, task_id):
         client: TelegramClient = await get_session()
         
         ids=[]
-        total_size = file.getbuffer().nbytes
+        file_path = f'{TMP_FILE_FOLDER}/{task_id}'
+        total_size = os.path.getsize(file_path)
+
         i = 0
-        while True:
-            part_file = file.read(CHANK_SIZE_MB * 1024 * 1024)
-            if not part_file:
-                break
-            print(f'send_file: {chat_id = }, {ids = }')
-            file_info = await client.send_file(
-                                            chat_id,
-                                            part_file,
-                                            use_cache=False,
-                                            part_size_kb=512,
-                                            progress_callback=callback,
-                                            )
-            ids.append(file_info.id)
-            i += 1
+        with open(file_path, 'rb') as file:
+            while chunk := file.read(CHANK_SEND):
+                print(f'send_file: {chat_id = }, {ids = }')
+                file_info = await client.send_file(chat_id, file=chunk, force_document=True, progress_callback=callback,)
+                ids.append(file_info.id)
+                i += 1
+
 
         await client.disconnect()
 
@@ -46,7 +41,6 @@ async def send_file(file, task_id):
 
 
 async def download_file(message_id, task_id):
-    msg_count = len(eval(message_id))
 
     def callback(current, total):
         progress.set_progress(task_id, msg.id, round(current / total_size * 100, 2))
@@ -54,7 +48,6 @@ async def download_file(message_id, task_id):
     try:
         client: TelegramClient = await get_session()
         
-        blob = bytes()
         list_msg = []
         total_size = 0
 
@@ -63,14 +56,13 @@ async def download_file(message_id, task_id):
             list_msg.append(message)
             total_size += message.media.document.size
 
-        for msg in list_msg:    
-            print(f'download_file: {chat_id = }, {msg.id = }')
-
-            blob += await client.download_media(msg, file=bytes, progress_callback=callback)
+        with open(f'{TMP_FILE_FOLDER}/{task_id}', 'wb') as f:
+            for msg in list_msg:    
+                await client.download_media(msg, file=f, progress_callback=callback)
 
         await client.disconnect()
         
-        return blob
+        return total_size
     
     except Exception as e:
         print(e)

@@ -23,6 +23,15 @@ document.getElementById('fileInput').addEventListener('change', function() {
             }
         };
 
+        xhr.onload = function() {
+            console.log(xhr.status);
+            if (xhr.status >= 200 && xhr.status < 300) {
+                window.location.reload();
+            } else {
+                console.error('Ошибка:', xhr.status);
+            }
+        };
+
         xhr.send(formData);
     }
 });
