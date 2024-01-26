@@ -11,6 +11,7 @@ phone_number = os.getenv('PHONE_NUMBER')
 
 async def get_session():
     client = TelegramClient('bot\sessions\\tg_cloud', api_id, api_hash, system_version='4.16.30-vxCUSTOM')
+    client.flood_sleep_threshold = 24*60*60
     await client.connect()
     if not await client.is_user_authorized():
         try:
