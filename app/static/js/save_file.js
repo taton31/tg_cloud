@@ -17,7 +17,14 @@ document.getElementById('fileInput').addEventListener('change', function() {
         let task_id = getRandomInt();
         xhr.open('POST', '/uploadfile/?path=' + path + '&task_id=' + task_id + '&size=' + file_size, true);
         create_event_listener(task_id)
-
+        
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                var progressPercentage = (e.loaded / e.total) * 100;
+                progressBar.value = progressPercentage;
+            }
+        };
+        
         xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 300) {
                 window.location.reload();
