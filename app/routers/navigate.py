@@ -1,5 +1,5 @@
 from fastapi import Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 
 from app import app, templates
 from app import get_folders, rename_folder, remove_folder, move_folder, create_folder_but
@@ -39,3 +39,9 @@ async def move(type: str, id: int):
 @app.get("/create")
 async def create(name: str, path: str):
     create_folder_but(name, path)
+
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse('app/static/favicon.ico')
