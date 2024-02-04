@@ -18,9 +18,9 @@ from bot import download_file, send_file_cor
 from typing import List
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: List[UploadFile], path: str, task_id: int, size: int):
+async def create_upload_file(file: List[UploadFile], path: str, task_id: int, size: int, caption = None):
     for f in file:
-        ids = await send_file_cor(f, task_id, f.size)
+        ids = await send_file_cor(f, task_id, f.size, caption)
 
         create_file_with_id(f.filename, round(f.size/1024/1024, 3), path, f.filename.split('.')[-1], ids)
 

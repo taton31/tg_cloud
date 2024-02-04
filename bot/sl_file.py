@@ -17,7 +17,7 @@ import traceback
 
 
 
-async def send_file_cor(file, task_id, total_size):
+async def send_file_cor(file, task_id, total_size, caption):
     def callback(current, total):
         progress.set_progress(task_id, i, round(current / total_size * 100, 2))
 
@@ -28,7 +28,7 @@ async def send_file_cor(file, task_id, total_size):
 
         while total_size > 0:
             upload_file = await fast_upload_file(client, file, total_size, progress_callback=callback)
-            ids.append((await client.send_file(chat_id, file=upload_file, force_document=True, progress_callback=callback,)).id)
+            ids.append((await client.send_file(chat_id, file=upload_file, force_document=True, progress_callback=callback, caption=caption)).id)
             total_size -= CHANK
             i += 1
 
