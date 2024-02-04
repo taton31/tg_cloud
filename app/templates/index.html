@@ -28,7 +28,7 @@
 
             <div class="col-1.5 text-right">
                 <form id="uploadForm" action="/uploadfile/" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file" id="fileInput" style="display: none;">
+                    <input type="file" name="file" id="fileInput" style="display: none;" multiple>
                     <input type="text" name="path" value='{{ path }}' style="display: none;" id="pathInput">
                     <button class="btn btn-primary" type="button" onclick="chooseFile()">Загрузить файлы</button>
                 </form>

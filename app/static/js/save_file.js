@@ -7,11 +7,14 @@ document.getElementById('fileInput').addEventListener('change', function() {
     let pathInput = document.getElementById('pathInput');
 
     if (fileInput.files.length > 0) {
-        let file = fileInput.files[0];
         let path = pathInput.value;
-        let file_size = file.size;
+        let file_size = 0;
         let formData = new FormData();
-        formData.append('file', file);
+
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('file', fileInput.files[i]);
+            file_size = file_size + fileInput.files[i].size
+        }
 
         let xhr = new XMLHttpRequest();
         let task_id = getRandomInt();

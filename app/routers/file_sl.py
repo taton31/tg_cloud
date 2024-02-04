@@ -15,14 +15,14 @@ progress = Progress()
 
 from bot import download_file, send_file_cor
 
-
+from typing import List
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile, path: str, task_id: int, size: int):
+async def create_upload_file(file: List[UploadFile], path: str, task_id: int, size: int):
+    for f in file:
+        ids = await send_file_cor(f, task_id, f.size)
 
-    ids = await send_file_cor(file, task_id, size)
-
-    create_file_with_id(file.filename, round(size/1024/1024, 3), path, file.filename.split('.')[-1], ids)
+        create_file_with_id(f.filename, round(f.size/1024/1024, 3), path, f.filename.split('.')[-1], ids)
 
     return {"status": 200}
 
@@ -30,7 +30,8 @@ async def create_upload_file(file: UploadFile, path: str, task_id: int, size: in
 
 @app.get("/downloadfile")
 async def create_upload_file(type: str, id: str, task_id: int):
-    
+    if type == 'folder': 
+        return {"status": 400}
     tg_id, name = get_file_id(id)
 
     name = quote(name, safe='')
