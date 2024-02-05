@@ -6,7 +6,7 @@ function showContextMenu(event) {
     const contextMenu = document.getElementById("userContextMenu");
     contextMenu.style.display = "block";
     contextMenu.style.left = `${event.clientX}px`;
-    contextMenu.style.top = `${event.clientY}px`;
+    contextMenu.style.top = `${event.clientY + window.scrollY}px`;
     document.addEventListener("click", hideContextMenu);
 }
 
