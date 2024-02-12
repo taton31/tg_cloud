@@ -44,3 +44,13 @@ def remove_file(id: int):
     db_session.commit() 
     return file
 
+
+def get_not_backuped_file():
+    files = db_session.query(File).filter((File.tg_id_backup == None)).all()
+    return files
+
+def add_backup_id(id, id_backup):
+    file = db_session.query(File).filter((File.id == id)).first()
+    file.tg_id_backup = id_backup
+    db_session.commit() 
+    return file

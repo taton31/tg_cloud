@@ -17,5 +17,6 @@ class File(Base):
     is_del = Column(Boolean, unique=False, default=False)
 
     tg_id = Column(String, unique=True)
+    tg_id_backup = Column(String, unique=True)
 
     
