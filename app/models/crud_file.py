@@ -46,7 +46,7 @@ def remove_file(id: int):
 
 
 def get_not_backuped_file():
-    files = db_session.query(File).filter((File.tg_id_backup == None)).all()
+    files = db_session.query(File).filter((File.tg_id_backup == None) & (File.is_del == False)).all()
     return files
 
 def add_backup_id(id, id_backup):
