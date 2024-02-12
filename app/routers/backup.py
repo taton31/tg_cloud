@@ -44,3 +44,4 @@ async def backup():
             traceback_str = traceback.format_exc()
             print(f"Произошла ошибка: {traceback_str}")
     
+    return 200
