@@ -1,6 +1,6 @@
 from app import app, create_file_with_id, get_file_id
 
-from fastapi import Request, UploadFile
+from fastapi import Request, UploadFile, Depends
 from fastapi.responses import StreamingResponse
 
 from sse_starlette.sse import EventSourceResponse
@@ -15,10 +15,14 @@ progress = Progress()
 
 from bot import download_file, send_file_cor
 
-from typing import List
+from typing import List, Annotated
+
+
+from app.routers.auth import get_current_username
+
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: List[UploadFile], path: str, task_id: int, size: int, caption = None):
+async def create_upload_file(username: Annotated[str, Depends(get_current_username)], file: List[UploadFile], path: str, task_id: int, size: int, caption = None):
     for f in file:
         ids = await send_file_cor(f, task_id, f.size, caption)
 
@@ -29,7 +33,7 @@ async def create_upload_file(file: List[UploadFile], path: str, task_id: int, si
 
 
 @app.get("/downloadfile")
-async def create_upload_file(type: str, id: str, task_id: int):
+async def create_upload_file(username: Annotated[str, Depends(get_current_username)], type: str, id: str, task_id: int):
     if type == 'folder': 
         return {"status": 400}
     tg_id, name = get_file_id(id)

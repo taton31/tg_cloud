@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine 
@@ -22,6 +23,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+security = HTTPBasic()
 
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)
@@ -36,4 +38,4 @@ from app.models.crud_folder import get_folders, rename_folder, move_folder, remo
 
 
 
-from app.routers import file_sl, navigate, search, backup
+from app.routers import file_sl, navigate, search, backup, auth

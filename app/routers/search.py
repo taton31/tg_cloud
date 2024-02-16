@@ -1,11 +1,11 @@
-from fastapi import Request, Form
+from fastapi import Request, Form, Depends
 from fastapi.responses import HTMLResponse
 
 from app import app, templates, search_files_form, search_folders_form
 
-from typing import Optional
+from typing import Optional, Annotated
 
-
+from app.routers.auth import get_current_username
 
 
 @app.get("/search", response_class=HTMLResponse)
@@ -15,6 +15,7 @@ async def read_root(request: Request):
 
 @app.post("/search/file", response_class=HTMLResponse)
 async def search_files(
+    username: Annotated[str, Depends(get_current_username)], 
     request: Request,
     folder: Optional[str] = Form(None),
     filename: Optional[str] = Form(None),
@@ -31,6 +32,7 @@ async def search_files(
 
 @app.post("/search/folder", response_class=HTMLResponse)
 async def search_files(
+    username: Annotated[str, Depends(get_current_username)], 
     request: Request,
     folder_in_folder: Optional[str] = Form(None),
     subfolder_name: Optional[str] = Form(None)
