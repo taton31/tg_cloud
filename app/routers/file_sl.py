@@ -22,7 +22,7 @@ from app.routers.auth import get_current_username
 
 
 @app.post("/uploadfile/")
-async def create_upload_file(username: Annotated[str, Depends(get_current_username)], file: List[UploadFile], path: str, task_id: int, size: int, caption = None):
+async def create_upload_file(file: List[UploadFile], path: str, task_id: int, size: int, caption = None):
     for f in file:
         ids = await send_file_cor(f, task_id, f.size, caption)
 
